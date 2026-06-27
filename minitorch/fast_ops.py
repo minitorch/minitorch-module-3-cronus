@@ -174,7 +174,7 @@ def tensor_map(
             # Simple Version
             for i in prange(len(out)):
                 #out[i] = fn(in_storage[i])
-                out_index: Index = np.array(out_shape)
+                out_index = out_shape.copy()
                 to_index(i, out_shape, out_index)
                 #print(out_index)
                 #print(index_to_position(out_index, out_strides))
@@ -183,8 +183,8 @@ def tensor_map(
         else:
             # Broadcasted Version
             for i in prange(len(out)):
-                out_index: Index = np.array(out_shape)
-                in_index: Index  = np.array(in_shape)
+                out_index = out_shape.copy()
+                in_index  = in_shape.copy()
                 to_index(i, out_shape, out_index)
                 broadcast_index(out_index, out_shape, in_shape, in_index)
                 out[i] = fn(in_storage[index_to_position(in_index, in_strides)])

@@ -45,7 +45,10 @@ def index_to_position(index: Index, strides: Strides) -> int:
 
     # TODO: Implement for Task 2.1.
     #raise NotImplementedError("Need to implement for Task 2.1")
-    return np.dot(index, strides)
+    position = 0
+    for i in range(len(index)):
+        position = position + index[i] * strides[i]
+    return position
 
 def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     """
@@ -65,23 +68,28 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     dim = len(shape)
     #print("dim: "+ str(dim))
     #print(str(shape) + " ordinal: " + str(ordinal))
-    layout = np.ones(dim, dtype=int)
+    strides   = np.ones(dim, dtype=np.int32)
     total = 1
     for i in range(dim):
         total = total * shape[i]
     for i in range(dim):
-        layout[i] = total / shape[i]
-        total = layout[i]
-
-    strides = tuple(layout)
+        strides[i] = total / shape[i]
+        total = strides[i]
 
     for i in range(dim):
         #print("strides: " + str(strides[i]) + " for " + str(i))
-        if (i == 0):
-            out_index[i] = ordinal // strides[i]
-        else:
-            ordinal = ordinal - strides[i - 1] * out_index[i - 1]
-            out_index[i] = ordinal // strides[i]
+        #if (i == 0):
+        #    out_index[i] = ordinal // strides[i]
+        #else:
+        #    ordinal = ordinal - strides[i - 1] * out_index[i - 1]
+        #    out_index[i] = ordinal // strides[i]
+
+        known_position = 0
+        for j in range(0, i):
+            known_position = known_position + out_index[j] * strides[j]
+
+        out_index[i] = (ordinal - known_position) // strides[i]
+
     #print(out_index)
 
 def broadcast_index(
