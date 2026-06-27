@@ -65,7 +65,15 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     dim = len(shape)
     #print("dim: "+ str(dim))
     #print(str(shape) + " ordinal: " + str(ordinal))
-    strides = strides_from_shape(shape)
+    layout = np.ones(dim, dtype=int)
+    total = 1
+    for i in range(dim):
+        total = total * shape[i]
+    for i in range(dim):
+        layout[i] = total / shape[i]
+        total = layout[i]
+
+    strides = tuple(layout)
 
     for i in range(dim):
         #print("strides: " + str(strides[i]) + " for " + str(i))
@@ -163,12 +171,20 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
     return tuple(reversed(reversed_broadcasted_shape))
 
 def strides_from_shape(shape: UserShape) -> UserStrides:
-    layout = [1]
-    offset = 1
-    for s in reversed(shape):
-        layout.append(s * offset)
-        offset = s * offset
-    return tuple(reversed(layout[:-1]))
+    shape_length = len(shape)
+    layout = np.ones(shape_length, dtype=int)
+    total = 1
+    for i in range(shape_length):
+        total = total * shape[i]
+    for i in range(shape_length):
+        layout[i] = total / shape[i]
+        total = layout[i]
+    #layout = [1]
+    #offset = 1
+    #for s in reversed(shape):
+    #    layout.append(s * offset)
+    #    offset = s * offset
+    return tuple(layout)
 
 
 class TensorData:
