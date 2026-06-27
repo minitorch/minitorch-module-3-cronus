@@ -232,9 +232,9 @@ def tensor_zip(
             # Simple Version
             #print("tensor_zip Simple Version")
             for i in prange(len(out)):
-                out_index: Index = np.array(out_shape)
-                a_index: Index  = np.array(a_shape)
-                b_index: Index  = np.array(b_shape)
+                out_index = out_shape.copy()
+                a_index = a_shape.copy()
+                b_index = b_shape.copy()
                 to_index(i, out_shape, out_index)
                 #print("out_index")
                 #print(out_index)
@@ -253,9 +253,9 @@ def tensor_zip(
         else:
             # Broadcasted Version
             for i in prange(len(out)):
-                out_index: Index = np.array(out_shape)
-                a_index: Index  = np.array(a_shape)
-                b_index: Index  = np.array(b_shape)
+                out_index = out_shape.copy()
+                a_index   = a_shape.copy()
+                b_index   = b_shape.copy()
                 #print(out_index)
                 to_index(i, out_shape, out_index)
                 #print("out_index")
@@ -315,7 +315,7 @@ def tensor_reduce(
         # TODO: Implement for Task 3.1.
         #raise NotImplementedError("Need to implement for Task 3.1")
         for i in prange(len(out)):
-            out_index: Index = np.array(out_shape)
+            out_index = out_shape.copy()
             to_index(i, out_shape, out_index)
             results = a_storage[index_to_position(out_index, a_strides)]
             for j in range(1, a_shape[reduce_dim]):
