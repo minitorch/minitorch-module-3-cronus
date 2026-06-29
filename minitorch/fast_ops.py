@@ -170,7 +170,7 @@ def tensor_map(
     ) -> None:
         # TODO: Implement for Task 3.1.
         #raise NotImplementedError("Need to implement for Task 3.1")
-        if (in_shape == out_shape).all():
+        if np.array_equal(in_shape, out_shape):
             # Simple Version
             for i in prange(len(out)):
                 #out[i] = fn(in_storage[i])
