@@ -228,7 +228,7 @@ def tensor_zip(
     ) -> None:
         # TODO: Implement for Task 3.1.
         #raise NotImplementedError("Need to implement for Task 3.1")
-        if(a_shape == out_shape).all() and (b_shape == out_shape).all():
+        if np.array_equal(a_shape, out_shape) and np.array_equal(b_shape, out_shape):
             # Simple Version
             #print("tensor_zip Simple Version")
             for i in prange(len(out)):
