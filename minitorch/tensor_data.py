@@ -72,6 +72,7 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     for i in range(dim):
         total = total * shape[i]
 
+    mapped_positions = 0
     for i in range(dim):
         #print("strides: " + str(strides[i]) + " for " + str(i))
         #if (i == 0):
@@ -84,8 +85,8 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
         for j in range(i + 1, dim):
             stride = stride * shape[j] 
 
-        out_index[i] = ordinal // stride
-        ordinal      = ordinal - stride * out_index[i]
+        out_index[i] = (ordinal - mapped_positions) // stride
+        mapped_positions = mapped_positions + stride * out_index[i]
 
     #print(out_index)
 
