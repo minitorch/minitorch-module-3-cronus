@@ -112,21 +112,31 @@ def broadcast_index(
     #raise NotImplementedError("Need to implement for Task 2.2")
     #print("inside broadcast_index")
     #print(big_index)
-    big_index_copy     = big_index.copy()
-    reversed_big_index = big_index_copy[::-1]
-    reversed_shape     = shape[::-1]
-    reversed_out_index = reversed_big_index
     
-    # delete additonal dimision if shape < big_shape
-    if (len(shape) < len(big_shape)):
-        reversed_out_index = reversed_out_index[0:len(shape)]
+    big_index_reversed = big_index[::-1]
+    big_index_reversed_truncated = big_index_reversed[0:len(shape)]
 
     for i in range(len(shape)):
-        if (reversed_shape[i] == 1):
-            reversed_out_index[i] = 0
-    out_index_temp = reversed_out_index[::-1]
-    for i in range(len(shape)):
-        out_index[i] = out_index_temp[i]
+        if (shape[i] == 1):
+            out_index[i] = 0
+        else:
+            out_index[i] = big_index_reversed_truncated[len(shape) - i - 1]
+
+    #big_index_copy     = big_index.copy()
+    #reversed_big_index = big_index[::-1]
+    #reversed_shape     = shape[::-1]
+    #reversed_out_index = reversed_big_index
+    #
+    ## delete additonal dimision if shape < big_shape
+    #if (len(shape) < len(big_shape)):
+    #    reversed_out_index = reversed_out_index[0:len(shape)]
+
+    #for i in range(len(shape)):
+    #    if (reversed_shape[i] == 1):
+    #        reversed_out_index[i] = 0
+    #out_index_temp = reversed_out_index[::-1]
+    #for i in range(len(shape)):
+    #    out_index[i] = out_index_temp[i]
     #print("exit broadcast_index")
 
 
