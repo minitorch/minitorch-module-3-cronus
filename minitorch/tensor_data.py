@@ -68,13 +68,9 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     dim = len(shape)
     #print("dim: "+ str(dim))
     #print(str(shape) + " ordinal: " + str(ordinal))
-    strides   = np.ones(dim, dtype=np.int32)
     total = 1
     for i in range(dim):
         total = total * shape[i]
-    for i in range(dim):
-        strides[i] = total / shape[i]
-        total = strides[i]
 
     for i in range(dim):
         #print("strides: " + str(strides[i]) + " for " + str(i))
@@ -84,11 +80,12 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
         #    ordinal = ordinal - strides[i - 1] * out_index[i - 1]
         #    out_index[i] = ordinal // strides[i]
 
-        known_position = 0
-        for j in range(0, i):
-            known_position = known_position + out_index[j] * strides[j]
+        stride = 1
+        for j in range(i + 1, dim):
+            stride = stride * shape[j] 
 
-        out_index[i] = (ordinal - known_position) // strides[i]
+        out_index[i] = ordinal // stride
+        ordinal      = ordinal - stride * out_index[i]
 
     #print(out_index)
 
