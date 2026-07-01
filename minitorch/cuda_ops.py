@@ -94,7 +94,7 @@ class CudaOps(TensorOps):
             out_shape[dim] = (a.shape[dim] - 1) // 1024 + 1
             out_a = a.zeros(tuple(out_shape))
 
-            threadsperblock = 1024
+            threadsperblock = 512
             blockspergrid = out_a.size
             f[blockspergrid, threadsperblock](  # type: ignore
                 *out_a.tuple(), out_a.size, *a.tuple(), dim, start
@@ -273,8 +273,22 @@ def _sum_practice(out: Storage, a: Storage, size: int) -> None:
     pos = cuda.threadIdx.x
 
     # TODO: Implement for Task 3.3.
-    raise NotImplementedError("Need to implement for Task 3.3")
+    #raise NotImplementedError("Need to implement for Task 3.3")
+    #Preload data into shared memory
 
+    if (i < size):
+        blockIdx = cuda.blockIdx.x
+        cache[pos] = a[blockIdx * BLOCK_DIM + pos]
+
+        cuda.syncthreads()
+
+        tmp = 0
+        for j in range(BLOCK_DIM):
+            tmp += cache[j]
+
+        cuda.syncthreads()
+
+        out[blockIdx] = tmp
 
 jit_sum_practice = cuda.jit()(_sum_practice)
 
@@ -322,9 +336,25 @@ def tensor_reduce(
         out_index = cuda.local.array(MAX_DIMS, numba.int32)
         out_pos = cuda.blockIdx.x
         pos = cuda.threadIdx.x
-
+        
         # TODO: Implement for Task 3.3.
         #raise NotImplementedError("Need to implement for Task 3.3")
+        if (out_pos < out_size):
+
+            to_index(out_pos, out_shape, out_index)
+            init_position = index_to_position(out_index, a_strides) 
+            
+            cache[pos] = a_storage[pos * a_strides[reduce_dim] + init_position]
+
+            cuda.syncthreads()
+            
+            tmp = reduce_value
+            for j in range(a_shape[reduce_dim]):
+                tmp = fn(tmp, cache[j])
+
+            cuda.syncthreads()
+
+            out[out_pos] = tmp
 
     return jit(_reduce)  # type: ignore
 
@@ -361,8 +391,8 @@ def _mm_practice(out: Storage, a: Storage, b: Storage, size: int) -> None:
 
     """
     BLOCK_DIM = 32
-    # TODO: Implement for Task 3.3.
-    raise NotImplementedError("Need to implement for Task 3.3")
+    # TODO: Implement for Task 3.4.
+    raise NotImplementedError("Need to implement for Task 3.4")
 
 
 jit_mm_practice = jit(_mm_practice)
