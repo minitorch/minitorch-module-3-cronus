@@ -91,7 +91,7 @@ class CudaOps(TensorOps):
 
         def ret(a: Tensor, dim: int) -> Tensor:
             out_shape = list(a.shape)
-            out_shape[dim] = (a.shape[dim] - 1) // 1024 + 1
+            out_shape[dim] = (a.shape[dim] - 1) // 512 + 1
             out_a = a.zeros(tuple(out_shape))
 
             threadsperblock = 512
