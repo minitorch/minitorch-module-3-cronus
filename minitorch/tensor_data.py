@@ -4,6 +4,7 @@ import random
 from typing import Iterable, Optional, Sequence, Tuple, Union
 
 import numba
+from numba import cuda
 import numpy as np
 import numpy.typing as npt
 from numpy import array, float64
@@ -111,34 +112,22 @@ def broadcast_index(
     """
     # TODO: Implement for Task 2.2.
     #raise NotImplementedError("Need to implement for Task 2.2")
-    #print("inside broadcast_index")
-    #print(big_index)
     
-    big_index_reversed = big_index[::-1]
-    big_index_reversed_truncated = big_index_reversed[0:len(shape)]
+    #threadIdx = cuda.blockIdx.x * cuda.blockDim.x + cuda.threadIdx.x
 
     for i in range(len(shape)):
         if (shape[i] == 1):
             out_index[i] = 0
         else:
-            out_index[i] = big_index_reversed_truncated[len(shape) - i - 1]
+            out_index[i] = big_index[len(big_shape) - len(shape) + i]
 
-    #big_index_copy     = big_index.copy()
-    #reversed_big_index = big_index[::-1]
-    #reversed_shape     = shape[::-1]
-    #reversed_out_index = reversed_big_index
-    #
-    ## delete additonal dimision if shape < big_shape
-    #if (len(shape) < len(big_shape)):
-    #    reversed_out_index = reversed_out_index[0:len(shape)]
-
-    #for i in range(len(shape)):
-    #    if (reversed_shape[i] == 1):
-    #        reversed_out_index[i] = 0
-    #out_index_temp = reversed_out_index[::-1]
-    #for i in range(len(shape)):
-    #    out_index[i] = out_index_temp[i]
-    #print("exit broadcast_index")
+    #if (threadIdx == 1):
+    #    print("inside broadcast_index")
+    #    print(big_index[0])
+    #    print(big_index_reversed[0])
+    #    print(big_index_reversed_truncated[0])
+    #    print(out_index[0])
+    #    print("exit broadcast_index")
 
 
 def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
