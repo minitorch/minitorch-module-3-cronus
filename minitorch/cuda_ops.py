@@ -494,7 +494,7 @@ def _tensor_matrix_multiply(
 
     tmp = 0
     for m in range(cuda.gridDim.x):
-        if (i < a_shape[1] and (pj + m * BLOCK_DIM) < a_shape[2]):
+        if (i < a_shape[1] and (pj + m * BLOCK_DIM < a_shape[2])):
             a_position = (batch * cuda.blockIdx.z + cuda.threadIdx.z) * a_batch_stride + i * a_strides[1] + (pj + m * BLOCK_DIM) * a_strides[2]
             a_shared[pi, pj] = a_storage[a_position]
         if ((pi + m * BLOCK_DIM) < b_shape[1] and j < b_shape[2]):
@@ -522,7 +522,7 @@ def _tensor_matrix_multiply(
         #    print(b_shared[1, j])
 
         for k in range(BLOCK_DIM):
-            if (k < a_shape[-1]):
+            if (k + m * BLOCK_DIM < a_shape[-1]):
                 #if (i == 1 and j == 0):
                 #    print(k)
                 #    print(a_shared[pi,k])
@@ -538,8 +538,6 @@ def _tensor_matrix_multiply(
         #    print(tmp)
         #if (i == 1 and j == 1):
         #    print(tmp)
-    if(tmp != 0):
-        print(tmp)
 
     out_position      = (batch * cuda.blockIdx.z + cuda.threadIdx.z) * out_strides[0] + i * out_strides[1] + j * out_strides[2]
     out[out_position] = tmp
