@@ -495,10 +495,10 @@ def _tensor_matrix_multiply(
     tmp = 0.
     for m in range(cuda.gridDim.x):
         # Preload data into shared memory
-        a_position = (batch * cuda.blockIdx.z + cuda.threadIdx.z) * a_batch_stride + i * a_strides[1] + (pj + m * BLOCK_DIM) * a_strides[2]
+        a_position = (batch * cuda.blockDim.z + cuda.threadIdx.z) * a_batch_stride + i * a_strides[1] + (pj + m * BLOCK_DIM) * a_strides[2]
         a_shared[pi, pj] = a_storage[a_position]
             
-        b_position = (batch * cuda.blockIdx.z + cuda.threadIdx.z) * b_batch_stride + (pi + m * BLOCK_DIM) * b_strides[1] + j * b_strides[2]
+        b_position = (batch * cuda.blockDim.z + cuda.threadIdx.z) * b_batch_stride + (pi + m * BLOCK_DIM) * b_strides[1] + j * b_strides[2]
         b_shared[pi, pj] = b_storage[b_position]
 
         # Wait until all threads finish preloading
@@ -506,14 +506,13 @@ def _tensor_matrix_multiply(
 
         # Compute partial product on she shared memroy 
         for k in range(BLOCK_DIM):
-            #if (k + m * BLOCK_DIM < a_shape[-1]):
             tmp += a_shared[pi, k] * b_shared[k, pj]
 
         # Wait until all threads finish computing
         cuda.syncthreads()
 
     if (i < out_shape[1] and j < out_shape[2]):
-        out_position      = (batch * cuda.blockIdx.z + cuda.threadIdx.z) * out_strides[0] + i * out_strides[1] + j * out_strides[2]
+        out_position      = (batch * cuda.blockDim.z + cuda.threadIdx.z) * out_strides[0] + i * out_strides[1] + j * out_strides[2]
         out[out_position] = tmp
 
 tensor_matrix_multiply = jit(_tensor_matrix_multiply)
