@@ -506,7 +506,8 @@ def _tensor_matrix_multiply(
 
         # Compute partial product on she shared memroy 
         for k in range(BLOCK_DIM):
-            tmp += a_shared[pi, k] * b_shared[k, pj]
+            if (k + m * BLOCK_DIM < a_shape[2]):
+                tmp += a_shared[pi, k] * b_shared[k, pj]
 
         # Wait until all threads finish computing
         cuda.syncthreads()
