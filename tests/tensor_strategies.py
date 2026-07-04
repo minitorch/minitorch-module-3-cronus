@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from hypothesis import settings
+from hypothesis import HealthCheck, settings
 from hypothesis.strategies import (
     DrawFn,
     SearchStrategy,
@@ -16,8 +16,19 @@ from minitorch import Tensor, TensorBackend, TensorData, UserIndex, UserShape
 
 from .strategies import small_ints
 
-settings.register_profile("ci", deadline=None)
+settings.register_profile(
+    "ci", 
+    deadline=None
+)
 settings.load_profile("ci")
+
+settings.register_profile(
+    "no_health_check",
+    suppress_health_check=[
+        HealthCheck.data_too_large
+    ]
+)
+settings.load_profile("no_health_check")
 
 
 @composite
